@@ -1,11 +1,36 @@
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, StatusBar, Dimensions } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
+import React, { useState } from 'react';
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, StatusBar, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const validateEmail = () => {
+        // Regular expression for email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const handleLogin = () => {
+        if (!email || !password) {
+            setError('Please enter email and password');
+        } else if (!validateEmail()) {
+            setError('Invalid email format');
+        } else if (email !== 'user@metawolf.com' || password !== 'Metawolf@123') {
+            setError('Invalid email or password');
+        } else {
+            // Reset error message
+            setError('');
+            // Navigate to HomeScreen
+            navigation.navigate("BottomNavigation");
+        }
+    };
+
     return (
         <>
             <StatusBar backgroundColor="#002d4d" />
@@ -23,22 +48,25 @@ const LoginScreen = () => {
                             placeholder="Email"
                             placeholderTextColor="#d2d2d2"
                             keyboardType='email-address'
+                            value={email}
+                            onChangeText={setEmail}
                         />
-
                         <TextInput
                             style={[styles.txtInput, { marginTop: 20 }]}
                             placeholder="Password"
                             placeholderTextColor="#d2d2d2"
                             keyboardType='visible-password'
                             secureTextEntry
+                            value={password}
+                            onChangeText={setPassword}
                         />
-
                         <TouchableOpacity>
                             <Text style={styles.text}>Forgot Password ?</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("BottomNavigation")} style={styles.btnContainer}>
+                        <TouchableOpacity onPress={handleLogin} style={styles.btnContainer}>
                             <Text style={styles.btnText}>Login</Text>
                         </TouchableOpacity>
+                        {error ? <Text style={styles.error}>{error}</Text> : null}
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.text}>Don't have access,</Text>
                             <TouchableOpacity><Text style={styles.regText}>register a new account</Text></TouchableOpacity>
@@ -48,8 +76,8 @@ const LoginScreen = () => {
                 </View>
             </View>
         </>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -59,7 +87,7 @@ const styles = StyleSheet.create({
     germanyImg: {
         width: 150,
         height: 100,
-        objectFit: 'contain',
+        resizeMode: 'contain',
         alignSelf: 'center'
     },
     headerTextContainer: {
@@ -67,6 +95,7 @@ const styles = StyleSheet.create({
     },
     txt: {
         fontSize: 18,
+        color: '#fff',
     },
     headerTxt: {
         fontSize: 30,
@@ -77,12 +106,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         borderTopRightRadius: 30,
-        borderTopLeftRadius: 30
+        borderTopLeftRadius: 30,
+        // paddingTop: 30,
+        paddingHorizontal: 20,
     },
     logo: {
         width: 200,
         height: 150,
-        objectFit: 'contain',
+        resizeMode: 'contain',
         alignSelf: 'center'
     },
     loginContainer: {
@@ -92,9 +123,10 @@ const styles = StyleSheet.create({
     txtInput: {
         borderBottomWidth: 1,
         borderColor: 'black',
-        width: '80%',
+        width: '90%',
         marginBottom: 10,
         fontSize: 16,
+        color: '#000',
     },
     btnContainer: {
         backgroundColor: '#002d4d',
@@ -119,9 +151,13 @@ const styles = StyleSheet.create({
     appleLogo: {
         width: 40,
         height: 40,
-        marginTop: width / 3
-    }
+        marginTop: width / 4
+    },
+    error: {
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+});
 
-})
-
-export default LoginScreen
+export default LoginScreen;
